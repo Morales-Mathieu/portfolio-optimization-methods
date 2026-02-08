@@ -7,6 +7,13 @@ under realistic constraints and a walk-forward (rolling) evaluation framework.
 > Note: results in the notebook are reported in **gross returns** (no transaction costs deducted).
 > The framework is designed so that transaction-cost models (net returns) can be added as an extension.
 
+## Notebook (HTML)
+
+The full analysis notebook is available as an interactive HTML page:
+
+👉 **[Open the walk-forward notebook](https://Morales-Mathieu.github.io/portfolio-optimization-methods/01_portfolio_optimization_walkforward.html)**
+
+
 ---
 
 ## Objective
