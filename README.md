@@ -1,67 +1,91 @@
 # portfolio-optimization-methods
 
-This project investigates whether portfolio optimization techniques can
-consistently outperform a naive Equal-Weight portfolio once realistic
-constraints and out-of-sample evaluation are taken into account.
+Portfolio allocation is easy to optimize **in-sample** and much harder to validate **out-of-sample**.
+This project benchmarks classic portfolio optimization methods against a simple Equal-Weight portfolio,
+under realistic constraints and a walk-forward (rolling) evaluation framework.
+
+> Note: results in the notebook are reported in **gross returns** (no transaction costs deducted).
+> The framework is designed so that transaction-cost models (net returns) can be added as an extension.
+
+---
 
 ## Objective
 
-The central question addressed by this project is:
+**Do portfolio optimization methods (e.g. Minimum Variance, Maximum Sharpe) deliver better risk-adjusted performance than a naive Equal-Weight portfolio once we evaluate them strictly out-of-sample?**
 
-**Can portfolio optimization methods (such as Minimum Variance or Maximum Sharpe)
-deliver superior risk-adjusted performance compared to a simple Equal-Weight
-benchmark when evaluated under realistic conditions?**
+To answer this, the project:
+- compares multiple allocation methods (Equal-Weight, Minimum Variance, Maximum Sharpe),
+- enforces realistic constraints (long-only, fully invested, weight caps),
+- evaluates performance with risk and downside metrics (Sharpe, max drawdown, Sortino, Calmar, VaR),
+- uses **walk-forward backtesting** (rolling train/test) to reduce look-ahead bias.
 
-To answer this question, the project:
-- compares multiple portfolio allocation strategies,
-- enforces realistic constraints (long-only, weight caps),
-- evaluates performance using risk-adjusted metrics,
-- extends the analysis to walk-forward backtesting and transaction costs.
+---
 
-## Benchmark: Equal-Weight Portfolio
+## Methods implemented
 
-The Equal-Weight portfolio serves as a naive but robust benchmark throughout the
-analysis. It allocates identical weights to each asset in the investment universe
-(e.g. 20% per asset for a 5-asset portfolio).
+### 1) Equal-Weight (benchmark)
+A robust baseline: identical weights across assets (e.g. 20% each in a 5-asset universe).
 
-This benchmark is intentionally simple:
-- static allocation,
-- no optimization,
-- no rebalancing,
-- no transaction costs.
+### 2) Minimum Variance
+Finds weights that minimize portfolio variance under constraints (risk-focused).
 
-It provides a transparent reference point against which more sophisticated
-allocation methods can be evaluated.
+### 3) Maximum Sharpe
+Optimizes the expected return / risk trade-off (return-driven, typically more sensitive to estimation error).
+
+---
+
+## Walk-forward backtesting (out-of-sample)
+
+We simulate a realistic investment process:
+- **Training window:** 252 trading days (~1 year)
+- **Test window:** 21 trading days (~1 month)
+- **Rebalancing:** monthly (weights are re-estimated each cycle, then applied out-of-sample)
+
+---
 
 ## Results (snapshot)
 
-The figure below compares the performance of three **static** portfolio
-allocation strategies over the full sample period:
+### Walk-forward equity curves (gross)
+Comparison of the three strategies evaluated strictly out-of-sample:
 
-- **Equal-Weight** (naive benchmark),
-- **Minimum Variance** (risk-focused optimization),
-- **Maximum Sharpe Ratio** (return-driven optimization).
+![Walk-Forward Equity Curves](reports/figures/equity_curve_walkforward.png)
 
-![Equity Curve Comparison](reports/figures/equity_curve_comparison.png)
+**Key takeaway (in this dataset):**
+- Maximum Sharpe tends to achieve slightly better risk-adjusted performance and smaller drawdowns,
+- Minimum Variance often ends up close to Equal-Weight (especially when assets are highly correlated and capped),
+- the performance gap shrinks out-of-sample compared to in-sample results → highlighting estimation error risk.
 
-The Maximum Sharpe portfolio exhibits higher in-sample risk-adjusted performance,
-while the Equal-Weight and Minimum Variance strategies deliver similar outcomes in
-this asset universe. Since these results rely on full-sample estimates, they may
-be affected by estimation error.
+---
 
-This motivates the use of walk-forward backtesting and transaction costs in the
-next stage of the analysis.
+## Benchmark & risk decomposition
 
-## Methodology & Details
+To understand *where* performance comes from, strategies are also compared to a market benchmark (S&P 500 proxy),
+with CAPM-style metrics (Alpha, Beta) and additional downside measures (Sortino, Calmar) + historical VaR.
 
-All data processing, portfolio construction, optimization procedures, and
-performance analyses are documented step by step in the main notebook:
+---
 
+## How to run
+
+1. Create and activate a virtual environment
+2. Install requirements
+3. Run the main notebook
+
+Main notebook:
 - `notebooks/01_portfolio_optimization_walkforward.ipynb`
 
-## Repository Structure
+---
 
-- `notebooks/` : documented analysis and experiments  
-- `src/` : reusable portfolio and backtesting functions  
+## Repository structure
+
+- `notebooks/` : step-by-step analysis and experiments  
+- `src/` : reusable portfolio + backtesting functions (if/when refactored from notebook)  
 - `data/` : raw and processed market data  
 - `reports/figures/` : exported figures used in the README  
+
+---
+
+## Extensions (ideas)
+- Add transaction costs (net returns) using turnover-based cost model
+- Test multiple asset universes (equities vs diversified ETFs)
+- Add other allocation methods (risk parity, ERC, volatility targeting)
+- Robust optimization / shrinkage covariance estimators
