@@ -11,7 +11,7 @@ under realistic constraints and a walk-forward (rolling) evaluation framework.
 
 The full analysis notebook is available as an interactive HTML page:
 
-👉 **[Open the walk-forward notebook](https://Morales-Mathieu.github.io/portfolio-optimization-methods/01_portfolio_optimization_walkforward.html)**
+**[Open the walk-forward notebook](https://Morales-Mathieu.github.io/portfolio-optimization-methods/01_portfolio_optimization_walkforward.html)**
 
 
 ---
